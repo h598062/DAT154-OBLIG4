@@ -18,3 +18,24 @@ Lages med MAUI. Bruker DatabaseLibrary for å hente data fra databasen.
 
 Klasser for å hente data fra databasen.
 Bruker Entity Framework Core og scaffolding for å generere klassene.
+
+## Database
+
+Tabell med romdata:
+
+`id | kvalitet | antall_senger`
+id er PK
+
+Tabell med bookingdata:
+
+`id | rom_id | startdato | sluttdato | antall_personer`
+id er PK, rom_id er FK fra romdata
+
+Tabell med prisdata:
+
+`kvalitet | pris`
+kvalitet blir PK og FK i romdata
+
+Tabell med kunde-brukere:
+
+`id | navn | telefon | epost | passord_hash | passord_salt`

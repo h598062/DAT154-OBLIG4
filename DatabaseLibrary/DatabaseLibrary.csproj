@@ -4,7 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
+      <UserSecretsId>8ca650ba-3048-442a-98ef-d5207080bb68</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />

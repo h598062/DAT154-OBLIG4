@@ -1,0 +1,56 @@
+﻿@page "/booking"
+@using Microsoft.AspNetCore.Authorization
+@using DatabaseLibrary
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<Oblig4Context> DbContext
+@rendermode InteractiveServer
+
+@attribute [Authorize]
+
+<PageTitle>Book rom</PageTitle>
+
+<h1>Booking av rom</h1>
+
+<select @bind="valgtRomId">
+    @foreach (var rom in rooms)
+    {
+        <option value="@rom.Id">@rom.Kvalitet</option>
+    }
+</select>
+
+<input type="date" @bind="startdato" />
+<input type="date" @bind="sluttdato" />
+<input type="number" @bind="antallPersoner" min="1" />
+<input type="text" @bind="bruker" />
+
+<button @onclick="BookRom"> Book rom</button>
+
+@code {
+    private int valgtRomId;
+    private List<Romdata> rooms;
+    private DateTime startdato = DateTime.Now;
+    private DateTime sluttdato = DateTime.Now.AddDays(1);
+    private int antallPersoner = 1;
+    private string bruker = string.Empty;
+
+    private async Task OnInitializedAsync()
+    { 
+        var context = DbContext.CreateDbContext();
+        rooms = await context.Romdata.ToListAsync();
+    }
+    
+    private async Task BookRom()
+    {
+        var context = DbContext.CreateDbContext();
+        var booking = new Bookingdata
+        {
+            RomId = valgtRomId,
+            Startdato = startdato,
+            Sluttdato = sluttdato,
+            AntallPersoner = antallPersoner,
+            Bruker = bruker
+        };
+        context.Bookingdata.Add(booking);
+        await context.SaveChangesAsync();
+    }
+}

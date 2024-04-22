@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using BlazorWebAppAuth.Components;
 using BlazorWebAppAuth.Components.Account;
 using BlazorWebAppAuth.Data;
+using DatabaseLibrary;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,8 @@ if (builder.Configuration.GetSection("UseLocalSQLiteDB").Get<bool>())
     }
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlite(connectionString));
+    builder.Services.AddDbContext<Oblig4Context>(options =>
+        options.UseSqlite(connectionString));
 }
 else
 {
@@ -43,6 +46,8 @@ else
         throw new InvalidOperationException("Connection string 'AzureDB' not found.");
     }
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString));
+    builder.Services.AddDbContext<Oblig4Context>(options =>
         options.UseSqlServer(connectionString));
 }
 

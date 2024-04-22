@@ -21,16 +21,19 @@ public partial class Oblig4Context : DbContext
 
     public virtual DbSet<Romdata> Romdata { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("");
+    /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("");*/
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Bruk norsk collation for å unngå problemer med æøå
+        modelBuilder.UseCollation("Danish_Norwegian_CI_AS");
+        
         modelBuilder.Entity<Bookingdata>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__bookingd__3213E83F2E9DE6DA");
 
-            entity.ToTable("bookingdata", "oblig4");
+            entity.ToTable("bookingdata");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AntallPersoner).HasColumnName("antall_personer");
@@ -56,7 +59,7 @@ public partial class Oblig4Context : DbContext
         {
             entity.HasKey(e => e.Kvalitet).HasName("PK__prisdata__680168666BF602A8");
 
-            entity.ToTable("prisdata", "oblig4");
+            entity.ToTable("prisdata");
 
             entity.Property(e => e.Kvalitet)
                 .HasMaxLength(255)
@@ -69,7 +72,7 @@ public partial class Oblig4Context : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__romdata__3213E83F26FE1B60");
 
-            entity.ToTable("romdata", "oblig4");
+            entity.ToTable("romdata");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AntallSenger).HasColumnName("antall_senger");

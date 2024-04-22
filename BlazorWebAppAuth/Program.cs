@@ -36,6 +36,7 @@ if (builder.Configuration.GetSection("UseLocalSQLiteDB").Get<bool>())
         options.UseSqlite(connectionString));
     builder.Services.AddDbContext<Oblig4Context>(options =>
         options.UseSqlite(connectionString));
+    
 }
 else
 {

@@ -3,6 +3,8 @@
 
 # Ignore local dev sqlite db's
 */**/app.db
+*/**/app.db-shm
+*/**/app.db-wal
 
 
 ### ASPNETCore ###

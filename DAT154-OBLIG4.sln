@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiBlazorApp", "MauiBlazor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseLibrary", "DatabaseLibrary\DatabaseLibrary.csproj", "{7F84CAC5-535D-4B3E-A426-ADF7024991BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuth", "BlazorWebAppAuth\BlazorWebAppAuth.csproj", "{24F4B0DB-16D7-40EA-982E-66D88EFCFBAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{7F84CAC5-535D-4B3E-A426-ADF7024991BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F84CAC5-535D-4B3E-A426-ADF7024991BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F84CAC5-535D-4B3E-A426-ADF7024991BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24F4B0DB-16D7-40EA-982E-66D88EFCFBAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24F4B0DB-16D7-40EA-982E-66D88EFCFBAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24F4B0DB-16D7-40EA-982E-66D88EFCFBAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24F4B0DB-16D7-40EA-982E-66D88EFCFBAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

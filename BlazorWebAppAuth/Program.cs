@@ -23,10 +23,30 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+if (builder.Configuration.GetSection("UseLocalSQLiteDB").Get<bool>())
+{
+    var connectionString = builder.Configuration.GetConnectionString("LocalSQLite") ??
+                           throw new InvalidOperationException("Connection string 'LocalSQLite' not found.");
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Connection string 'LocalSQLite' not found.");
+    }
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(connectionString));
+}
+else
+{
+    var connectionString = builder.Configuration.GetConnectionString("AzureDB") ??
+                           throw new InvalidOperationException("Connection string 'AzureDB' not found.");
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Connection string 'AzureDB' not found.");
+    }
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString));
+}
+
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

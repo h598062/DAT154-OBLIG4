@@ -5,6 +5,7 @@ using BlazorWebAppAuth.Components;
 using BlazorWebAppAuth.Components.Account;
 using BlazorWebAppAuth.Data;
 using DatabaseLibrary;
+using DatabaseLibrary.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 

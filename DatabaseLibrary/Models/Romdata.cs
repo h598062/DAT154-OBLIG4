@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace DatabaseLibrary.Models;
 
-public partial class Brukere
+public partial class Romdata
 {
     public int Id { get; set; }
 
-    public string Epost { get; set; } = null!;
+    public string Kvalitet { get; set; } = null!;
 
-    public string Name { get; set; } = null!;
-
-    public string? Tlf { get; set; }
+    public int AntallSenger { get; set; }
 
     public virtual ICollection<Bookingdata> Bookingdata { get; set; } = new List<Bookingdata>();
+
+    public virtual Prisdata KvalitetNavigation { get; set; } = null!;
 }

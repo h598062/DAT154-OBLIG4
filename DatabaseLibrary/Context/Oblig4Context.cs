@@ -1,38 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using DatabaseLibrary.Migrations;
+using DatabaseLibrary.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatabaseLibrary.Context;
 
-public partial class MyDbContext : DbContext
+public partial class Oblig4Context : DbContext
 {
-    public MyDbContext()
+    public Oblig4Context()
     {
     }
 
-    public MyDbContext(DbContextOptions<MyDbContext> options)
+    public Oblig4Context(DbContextOptions<Oblig4Context> options)
         : base(options)
     {
     }
 
-    public virtual DbSet<Bookingdatum> Bookingdata { get; set; }
+    public virtual DbSet<Bookingdata> Bookingdata { get; set; }
 
-    public virtual DbSet<Bookingdatum1> Bookingdata1 { get; set; }
+    public virtual DbSet<Bookingdata1> Bookingdata1 { get; set; }
 
     public virtual DbSet<Brukere> Brukeres { get; set; }
 
-    public virtual DbSet<Prisdatum> Prisdata { get; set; }
+    public virtual DbSet<Prisdata> Prisdata { get; set; }
 
-    public virtual DbSet<Prisdatum1> Prisdata1 { get; set; }
+    public virtual DbSet<Prisdata1> Prisdata1 { get; set; }
 
-    public virtual DbSet<Romdatum> Romdata { get; set; }
+    public virtual DbSet<Romdata> Romdata { get; set; }
 
-    public virtual DbSet<Romdatum1> Romdata1 { get; set; }
+    public virtual DbSet<Romdata1> Romdata1 { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Bookingdatum>(entity =>
+        
+        
+        modelBuilder.Entity<Bookingdata>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__bookingd__3213E83FFC66BD4D");
 
@@ -60,7 +62,7 @@ public partial class MyDbContext : DbContext
                 .HasConstraintName("FK__bookingda__rom_i__06CD04F7");
         });
 
-        modelBuilder.Entity<Bookingdatum1>(entity =>
+        modelBuilder.Entity<Bookingdata1>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__bookingd__3213E83F2E9DE6DA");
 
@@ -80,7 +82,7 @@ public partial class MyDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("startdato");
 
-            entity.HasOne(d => d.Rom).WithMany(p => p.Bookingdatum1s)
+            entity.HasOne(d => d.Rom).WithMany(p => p.Bookingdata1s)
                 .HasForeignKey(d => d.RomId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__bookingda__rom_i__619B8048");
@@ -104,7 +106,7 @@ public partial class MyDbContext : DbContext
                 .HasColumnName("tlf");
         });
 
-        modelBuilder.Entity<Prisdatum>(entity =>
+        modelBuilder.Entity<Prisdata>(entity =>
         {
             entity.HasKey(e => e.Kvalitet).HasName("PK__prisdata__6801686609B89173");
 
@@ -117,7 +119,7 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.Pris).HasColumnName("pris");
         });
 
-        modelBuilder.Entity<Prisdatum1>(entity =>
+        modelBuilder.Entity<Prisdata1>(entity =>
         {
             entity.HasKey(e => e.Kvalitet).HasName("PK__prisdata__680168666BF602A8");
 
@@ -130,7 +132,7 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.Pris).HasColumnName("pris");
         });
 
-        modelBuilder.Entity<Romdatum>(entity =>
+        modelBuilder.Entity<Romdata>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__romdata__3213E83F5EF89C12");
 
@@ -149,7 +151,7 @@ public partial class MyDbContext : DbContext
                 .HasConstraintName("FK__romdata__antall___02084FDA");
         });
 
-        modelBuilder.Entity<Romdatum1>(entity =>
+        modelBuilder.Entity<Romdata1>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__romdata__3213E83F26FE1B60");
 
@@ -162,7 +164,7 @@ public partial class MyDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("kvalitet");
 
-            entity.HasOne(d => d.KvalitetNavigation).WithMany(p => p.Romdatum1s)
+            entity.HasOne(d => d.KvalitetNavigation).WithMany(p => p.Romdata1s)
                 .HasForeignKey(d => d.Kvalitet)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__romdata__kvalite__5EBF139D");

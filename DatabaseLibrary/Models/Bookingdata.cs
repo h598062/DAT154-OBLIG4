@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DatabaseLibrary.Migrations;
+namespace DatabaseLibrary.Models;
 
-public partial class Bookingdatum1
+public partial class Bookingdata
 {
     public int Id { get; set; }
 
@@ -15,7 +15,9 @@ public partial class Bookingdatum1
 
     public int AntallPersoner { get; set; }
 
-    public string Bruker { get; set; } = null!;
+    public int Bruker { get; set; }
 
-    public virtual Romdatum1 Rom { get; set; } = null!;
+    public virtual Brukere BrukerNavigation { get; set; } = null!;
+
+    public virtual Romdata Rom { get; set; } = null!;
 }

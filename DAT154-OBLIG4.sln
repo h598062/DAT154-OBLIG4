@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{A231A3C5-E1AD-4518-9939-A811359C2FBF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopApp", "DesktopApp\DesktopApp.csproj", "{4493FE71-2580-4145-A5FB-1103024BA7EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiBlazorApp", "MauiBlazorApp\MauiBlazorApp.csproj", "{83B27594-0009-4342-82C1-4561EAFAE083}"
@@ -14,10 +12,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A231A3C5-E1AD-4518-9939-A811359C2FBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A231A3C5-E1AD-4518-9939-A811359C2FBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A231A3C5-E1AD-4518-9939-A811359C2FBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A231A3C5-E1AD-4518-9939-A811359C2FBF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4493FE71-2580-4145-A5FB-1103024BA7EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4493FE71-2580-4145-A5FB-1103024BA7EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4493FE71-2580-4145-A5FB-1103024BA7EC}.Release|Any CPU.ActiveCfg = Release|Any CPU

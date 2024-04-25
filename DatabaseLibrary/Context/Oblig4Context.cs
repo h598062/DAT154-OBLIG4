@@ -21,13 +21,13 @@ public partial class Oblig4Context : DbContext
     public virtual DbSet<Brukere> Brukeres { get; set; }
 
     public virtual DbSet<Prisdata> Prisdata { get; set; }
-    
+
     public virtual DbSet<Romdata> Romdata { get; set; }
     
+    public virtual DbSet<Roomservice_requests> Roomservice_requests { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
-        
         modelBuilder.Entity<Bookingdata>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__bookingd__3213E83FFC66BD4D");
@@ -104,6 +104,34 @@ public partial class Oblig4Context : DbContext
                 .HasForeignKey(d => d.Kvalitet)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__romdata__antall___02084FDA");
+        });
+
+        modelBuilder.Entity<Roomservice_requests>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__roomservice_requests__3213E83F5EF89C12");
+
+            entity.ToTable("roomservice_requests");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Room_id).HasColumnName("room_id");
+            entity.Property(e => e.Bruker_id).HasColumnName("bruker_id");
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("status");
+            entity.Property(e => e.Notes)
+                .HasColumnType("text")
+                .HasColumnName("notes");
+
+            entity.HasOne(d => d.Room).WithMany()
+                .HasForeignKey(d => d.Room_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__roomservice_requests__room_id__02084FDA");
+
+            entity.HasOne(d => d.Bruker).WithMany()
+                .HasForeignKey(d => d.Bruker_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__roomservice_requests__bruker_id__03006BFF");
         });
 
         OnModelCreatingPartial(modelBuilder);

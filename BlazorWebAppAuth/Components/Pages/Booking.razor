@@ -1,10 +1,9 @@
 ﻿@page "/booking"
-@using Microsoft.AspNetCore.Authorization
-@using DatabaseLibrary
 @using DatabaseLibrary.Context
+@using Microsoft.AspNetCore.Authorization
 @using DatabaseLibrary.Models
 @using Microsoft.EntityFrameworkCore
-@inject IDbContextFactory<Oblig4Context> DbContext
+@inject Oblig4Context DbContext
 @rendermode InteractiveServer
 
 @attribute [Authorize]
@@ -13,46 +12,80 @@
 
 <h1>Booking av rom</h1>
 
-<select @bind="valgtRomId">
-    @foreach (var rom in rooms)
+<select @bind="valgtRomKvalitet">
+    @foreach (var rom in roomQuality)
     {
         <option value="@rom.Id">@rom.Kvalitet</option>
     }
 </select>
 
-<input type="date" @bind="startdato" />
-<input type="date" @bind="sluttdato" />
-<input type="number" @bind="antallPersoner" min="1" />
-<input type="text" @bind="bruker" />
+<input type="date" @bind="startdato"/>
+<input type="date" @bind="sluttdato"/>
+<input type="number" @bind="antallPersoner" min="1"/>
+<button @onclick="FinnRom">Finn rom</button>
 
-<button @onclick="BookRom"> Book rom</button>
+@if (soekt)
+{
+    <table>
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Kvalitet</th>
+            <th>Antall personer</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var rom in rooms)
+        {
+            <tr>
+                <td>@rom.Id</td>
+                <td>@rom.Kvalitet</td>
+                <td>@rom.AntallSenger</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 
 @code {
-    private int valgtRomId;
+    private string valgtRomKvalitet;
+    private List<Romdata> roomQuality;
     private List<Romdata> rooms;
     private DateTime startdato = DateTime.Now;
     private DateTime sluttdato = DateTime.Now.AddDays(1);
     private int antallPersoner = 1;
-    private string bruker = string.Empty;
+    private int bruker;
+    bool soekt;
 
-    private async Task OnInitializedAsync()
-    { 
-        var context = DbContext.CreateDbContext();
-        rooms = await context.Romdata.ToListAsync();
+
+    private async Task FinnRom()
+    {
+        soekt = true;
+        rooms = await DbContext.Romdata
+            .Where(r => r.AntallSenger >= antallPersoner && r.Kvalitet == valgtRomKvalitet
+                                                         && !r.Bookingdata.Any(b => b.Startdato < sluttdato && b.Sluttdato > startdato))
+            .ToListAsync();
     }
-    
+
+    protected override async Task OnInitializedAsync()
+    {
+        roomQuality = new List<Romdata>();
+        rooms = new List<Romdata>();
+        roomQuality = await DbContext.Romdata.ToListAsync();
+    }
+
+    /*
     private async Task BookRom()
     {
-        var context = DbContext.CreateDbContext();
         var booking = new Bookingdata
         {
             RomId = valgtRomId,
             Startdato = startdato,
             Sluttdato = sluttdato,
             AntallPersoner = antallPersoner,
-            Bruker = bruker
+            //Bruker = bruker
         };
-        context.Bookingdata.Add(booking);
-        await context.SaveChangesAsync();
-    }
+        DbContext.Bookingdata.Add(booking);
+        await DbContext.SaveChangesAsync();
+    } */
 }

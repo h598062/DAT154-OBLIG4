@@ -1,0 +1,66 @@
+﻿@page "/service-tasks"
+@using DatabaseLibrary.Context
+@using DatabaseLibrary.Models
+@using Microsoft.EntityFrameworkCore
+@inject Oblig4Context DbContext
+
+<h1>Roomservice tasks</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Room Id</th>
+        <th>Bruker</th>
+        <th>Status</th>
+        <th>Notes</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var request in _roomserviceRequestsList)
+    {
+        <tr>
+            <td>@request.Id</td>
+            <td>@request.Room_id</td>
+            <td>@request.Bruker_id</td>
+            <td>@request.Status</td>
+            <td>
+                <input type="text" @bind="request.Notes"/>
+                <button @onclick="() => EndreNote(request)">Update Notes</button>
+            </td>
+            <td>
+                <select @onchange="(e) => SetStatus(request, e.Value.ToString())">
+                    <option value="">Velg status...</option>
+                    <option value="new">New</option>
+                    <option value="in progress">In Progress</option>
+                    <option value="finished">Finished</option>
+                </select>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    List<Roomservice_requests> _roomserviceRequestsList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _roomserviceRequestsList = new List<Roomservice_requests>();
+        _roomserviceRequestsList = await DbContext.Roomservice_requests.ToListAsync();
+    }
+
+    private async Task EndreNote(Roomservice_requests request)
+    {
+        DbContext.Roomservice_requests.Update(request);
+        await DbContext.SaveChangesAsync();
+    }
+
+    private async Task SetStatus(Roomservice_requests request, string newStatus)
+    {
+        request.Status = newStatus;
+        DbContext.Roomservice_requests.Update(request);
+        await DbContext.SaveChangesAsync();
+    }
+
+}

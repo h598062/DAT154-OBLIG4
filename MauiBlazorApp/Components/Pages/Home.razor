@@ -1,5 +1,32 @@
 ﻿@page "/"
+@inject NavigationManager NavigationManager
 
-<h1>Hello, world!</h1>
+<h3>Select your role</h3>
 
-Welcome to your new app.
+<select @onchange="VelgJobb">
+    <option value="">Select...</option>
+    <option value="cleaner">Cleaner</option>
+    <option value="service">Roomservice</option>
+    <option value="maintenance">Maintenance</option>
+</select>
+
+@code {
+
+    private void VelgJobb(ChangeEventArgs e)
+    {
+        var jobb = e.Value.ToString();
+        switch (jobb)
+        {
+            case "cleaner":
+                NavigationManager.NavigateTo("/cleaner-tasks");
+                break;
+            case "service":
+                NavigationManager.NavigateTo("/service-tasks");
+                break;
+            case "maintenance":
+                NavigationManager.NavigateTo("/maintenance-tasks");
+                break;
+        }
+    }
+
+}

@@ -1,66 +1,100 @@
-﻿@page "/service-tasks"
-@using DatabaseLibrary.Context
-@using DatabaseLibrary.Models
-@using Microsoft.EntityFrameworkCore
-@inject Oblig4Context DbContext
+﻿Sure, you can create a similar page for room service requests. You just need to replace the `MaintenanceTask` class with a `RoomServiceRequest` class and adjust the properties accordingly. Here's how you can do it:
 
-<h1>Roomservice tasks</h1>
-<table>
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Room Id</th>
-        <th>Bruker</th>
-        <th>Status</th>
-        <th>Notes</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var request in _roomserviceRequestsList)
-    {
+```blazor
+@page "/roomservice-requests"
+
+<h1>Room Service Requests</h1>
+
+@if (roomServiceRequests == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
         <tr>
-            <td>@request.Id</td>
-            <td>@request.Room_id</td>
-            <td>@request.Bruker_id</td>
-            <td>@request.Status</td>
-            <td>
-                <input type="text" @bind="request.Notes"/>
-                <button @onclick="() => EndreNote(request)">Update Notes</button>
-            </td>
-            <td>
-                <select @onchange="(e) => SetStatus(request, e.Value.ToString())">
-                    <option value="">Velg status...</option>
-                    <option value="new">New</option>
-                    <option value="in progress">In Progress</option>
-                    <option value="finished">Finished</option>
-                </select>
-            </td>
+            <th>ID</th>
+            <th>Room ID</th>
+            <th>User ID</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Actions</th>
         </tr>
+        </thead>
+        <tbody>
+        @foreach (var request in roomServiceRequests)
+        {
+            <tr>
+                <td>@request.Id</td>
+                <td>@request.RoomId</td>
+                <td>@request.UserId</td>
+                <td>@request.Status</td>
+                <td>@request.Notes</td>
+                <td>
+                    <button @onclick="() => StartEdit(request)">Edit</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    @if (isEditing)
+    {
+        <div>
+            <h2>Edit Request</h2>
+            <label>Status: <input @bind="editingRequest.Status"/></label>
+            <label>Notes: <textarea @bind="editingRequest.Notes"></textarea></label>
+            <button @onclick="SaveEdit">Save</button>
+            <button @onclick="CancelEdit">Cancel</button>
+        </div>
     }
-    </tbody>
-</table>
+}
 
 @code {
-    List<Roomservice_requests> _roomserviceRequestsList;
+    private List<RoomServiceRequest>? roomServiceRequests;
+    private bool isEditing;
+    private RoomServiceRequest editingRequest;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        _roomserviceRequestsList = new List<Roomservice_requests>();
-        _roomserviceRequestsList = await DbContext.Roomservice_requests.ToListAsync();
+        // This is where you would normally load data from the database.
+        // For now, we'll just use some dummy data.
+        roomServiceRequests = new List<RoomServiceRequest>
+        {
+            new RoomServiceRequest { Id = 1, RoomId = 101, UserId = 1, Status = "Pending", Notes = "Need more towels" },
+            new RoomServiceRequest { Id = 2, RoomId = 102, UserId = 2, Status = "In Progress", Notes = "Room cleaning" },
+            // Add more requests as needed...
+        };
     }
 
-    private async Task EndreNote(Roomservice_requests request)
+    void StartEdit(RoomServiceRequest request)
     {
-        DbContext.Roomservice_requests.Update(request);
-        await DbContext.SaveChangesAsync();
+        editingRequest = request;
+        isEditing = true;
     }
 
-    private async Task SetStatus(Roomservice_requests request, string newStatus)
+    void SaveEdit()
     {
-        request.Status = newStatus;
-        DbContext.Roomservice_requests.Update(request);
-        await DbContext.SaveChangesAsync();
+        // Here you would normally save the changes to the database.
+        // For now, we'll just update the list in memory.
+        isEditing = false;
+    }
+
+    void CancelEdit()
+    {
+        isEditing = false;
+    }
+
+    class RoomServiceRequest
+    {
+        public int Id { get; set; }
+        public int RoomId { get; set; }
+        public int UserId { get; set; }
+        public string Status { get; set; }
+        public string Notes { get; set; }
     }
 
 }

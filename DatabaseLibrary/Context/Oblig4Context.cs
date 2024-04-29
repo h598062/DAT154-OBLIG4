@@ -25,6 +25,8 @@ public partial class Oblig4Context : DbContext
     public virtual DbSet<Romdata> Romdata { get; set; }
     
     public virtual DbSet<Roomservice_requests> Roomservice_requests { get; set; }
+    
+    public virtual DbSet<Maintenance_requests> Maintenance_requests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -132,6 +134,34 @@ public partial class Oblig4Context : DbContext
                 .HasForeignKey(d => d.Bruker_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__roomservice_requests__bruker_id__03006BFF");
+        });
+        
+        modelBuilder.Entity<Maintenance_requests>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__maintenance_requests__3213E83F5EF89C12");
+
+            entity.ToTable("maintenance_requests");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Room_id).HasColumnName("room_id");
+            entity.Property(e => e.User_id).HasColumnName("user_id");
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("status");
+            entity.Property(e => e.Notes)
+                .HasColumnType("text")
+                .HasColumnName("notes");
+
+            entity.HasOne(d => d.Room).WithMany()
+                .HasForeignKey(d => d.Room_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__maintenance_requests__room_id__02084FDA");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.User_id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__maintenance_requests__user_id__03006BFF");
         });
 
         OnModelCreatingPartial(modelBuilder);

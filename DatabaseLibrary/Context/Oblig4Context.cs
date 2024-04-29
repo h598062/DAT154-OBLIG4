@@ -24,6 +24,9 @@ public partial class Oblig4Context : DbContext
 
     public virtual DbSet<Romdata> Romdata { get; set; }
     
+    public virtual DbSet<Room> Rooms { get; set; }
+
+    
     public virtual DbSet<Roomservice_requests> Roomservice_requests { get; set; }
     
     public virtual DbSet<Maintenance_requests> Maintenance_requests { get; set; }
@@ -56,7 +59,16 @@ public partial class Oblig4Context : DbContext
                 .HasForeignKey(d => d.RomId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__bookingda__rom_i__06CD04F7");
+            
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User)
+                .WithMany()
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__bookingda__user_id__AspNetUsers");
         });
+        
+        
 
         modelBuilder.Entity<Brukere>(entity =>
         {
@@ -162,6 +174,25 @@ public partial class Oblig4Context : DbContext
                 .HasForeignKey(d => d.User_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__maintenance_requests__user_id__03006BFF");
+        });
+        
+        modelBuilder.Entity<Room>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.NumberOfBeds);
+
+            entity.Property(e => e.Quality)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Size)
+                .IsRequired()
+                .HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);

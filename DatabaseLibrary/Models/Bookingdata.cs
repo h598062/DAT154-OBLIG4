@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace DatabaseLibrary.Models;
 
@@ -10,6 +11,8 @@ public partial class Bookingdata
     public int RomId { get; set; }
 
     public DateTime Startdato { get; set; }
+    
+    public string UserId {get; set;}
 
     public DateTime Sluttdato { get; set; }
 
@@ -20,4 +23,7 @@ public partial class Bookingdata
     public virtual Brukere BrukerNavigation { get; set; } = null!;
 
     public virtual Romdata Rom { get; set; } = null!;
+    
+    public virtual IdentityUser User { get; set; }
+
 }

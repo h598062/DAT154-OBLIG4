@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using DatabaseLibrary.Models
 @using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Oblig4Context DbContext
 @rendermode InteractiveServer
 
@@ -22,70 +23,87 @@
 <input type="date" @bind="startdato"/>
 <input type="date" @bind="sluttdato"/>
 <input type="number" @bind="antallPersoner" min="1"/>
-<button @onclick="FinnRom">Finn rom</button>
+<button @onclick="BookRom">Book rom</button>
 
 @if (soekt)
 {
-    <table>
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Kvalitet</th>
-            <th>Antall personer</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var rom in rooms)
-        {
-            <tr>
-                <td>@rom.Id</td>
-                <td>@rom.Kvalitet</td>
-                <td>@rom.AntallSenger</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+    <p>Rommet er booket</p>
+}   
 
 @code {
     private string valgtRomKvalitet;
     private List<Romdata> roomQuality;
-    private List<Romdata> rooms;
+    private List<Room> rooms;
     private DateTime startdato = DateTime.Now;
     private DateTime sluttdato = DateTime.Now.AddDays(1);
     private int antallPersoner = 1;
     private int bruker;
     bool soekt;
-
-
-    private async Task FinnRom()
-    {
-        soekt = true;
-        rooms = await DbContext.Romdata
-            .Where(r => r.AntallSenger >= antallPersoner && r.Kvalitet == valgtRomKvalitet
-                                                         && !r.Bookingdata.Any(b => b.Startdato < sluttdato && b.Sluttdato > startdato))
-            .ToListAsync();
-    }
+    
 
     protected override async Task OnInitializedAsync()
     {
+        await GetCurrentUser();
         roomQuality = new List<Romdata>();
-        rooms = new List<Romdata>();
+        rooms = new List<Room>();
         roomQuality = await DbContext.Romdata.ToListAsync();
     }
+    
+    private async Task<string> GetCurrentUser()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-    /*
+        if (user.Identity.IsAuthenticated)
+        {
+            return user.Identity.Name;
+        }
+
+        return null;
+    }
+    
     private async Task BookRom()
     {
-        var booking = new Bookingdata
+        try
         {
-            RomId = valgtRomId,
-            Startdato = startdato,
-            Sluttdato = sluttdato,
-            AntallPersoner = antallPersoner,
-            //Bruker = bruker
+            var userId = await GetCurrentUser();
+            var romId = await CreateRoom();
+
+            var booking = new Bookingdata
+            {
+                RomId = romId,
+                Startdato = startdato,
+                Sluttdato = sluttdato,
+                AntallPersoner = antallPersoner,
+                UserId = userId
+            };
+
+            DbContext.Bookingdata.Add(booking);
+            await DbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log the error and the inner exception message
+            Console.WriteLine("Error: " + ex.Message);
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
+            }
+        }
+    }
+    
+    private async Task<int> CreateRoom()
+    {
+        var newRoom = new Room
+        {
+            Quality = valgtRomKvalitet,
+            Name = get
+            NumberOfBeds = antallPersoner
         };
-        DbContext.Bookingdata.Add(booking);
+
+        DbContext.Rooms.Add(newRoom);
         await DbContext.SaveChangesAsync();
-    } */
+
+        return newRoom.Id;
+    }
 }

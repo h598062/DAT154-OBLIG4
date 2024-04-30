@@ -12,34 +12,21 @@ public partial class MainWindow : Window
     public List<Maintenance_requests> MaintenanceRequestsList { get; set; }
     public List<Cleaning> CleaningList { get; set; }
     public List<Roomservice_requests> RoomserviceRequestsList { get; set; }
+    public List<Romdata> RoomList { get; set; } 
+    public List<Bookingdata> BookingList { get; set; } 
+
     
     public MainWindow()
     {
         InitializeComponent();
-
-        using (var context = new Oblig4Context())
-        {
-            MaintenanceRequestsList = context.Maintenance_requests.ToList();
-            CleaningList = context.Cleaning.ToList();
-            RoomserviceRequestsList = context.Roomservice_requests.ToList();
-        }
+        
+        MaintenanceRequestsList = App.DbContext.Maintenance_requests.ToList();
+        CleaningList = App.DbContext.Cleaning.ToList();
+        RoomserviceRequestsList = App.DbContext.Roomservice_requests.ToList();
+        RoomList = App.DbContext.Romdata.ToList();
+        BookingList = App.DbContext.Bookingdata.ToList(); 
 
         DataContext = this;
-    }
-
-    private void AddRoom_Click(object sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void EditRoom_Click(object sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void DeleteRoom_Click(object sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
     }
 
     private void AddReservation_Click(object sender, RoutedEventArgs e)

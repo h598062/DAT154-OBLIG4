@@ -18,7 +18,6 @@ else
         <tr>
             <th>ID</th>
             <th>Room ID</th>
-            <th>User ID</th>
             <th>Status</th>
             <th>Notes</th>
             <th>Actions</th>
@@ -30,7 +29,6 @@ else
             <tr>
                 <td>@task.Id</td>
                 <td>@task.Room_id</td>
-                <td>@task.User_id</td>
                 <td>@task.Status</td>
                 <td>@task.Notes</td>
                 <td>
@@ -50,7 +48,6 @@ else
                 <tr>
                     <td><input @bind="editingTask.Id" /></td>
                     <td><input @bind="editingTask.Room_id" /></td>
-                    <td><input @bind="editingTask.User_id" /></td>
                     <td><input @bind="editingTask.Status" /></td>
                     <td><input @bind="editingTask.Notes" /></td>
                     <td></td>

@@ -1,11 +1,81 @@
-﻿@page "/cleaner-tasks"
+﻿@page "/"
+@using DatabaseLibrary.Context
+@using DatabaseLibrary.Models
+@using Microsoft.EntityFrameworkCore
+@inject Oblig4Context DbContext
 
 <h1>Cleaner tasks</h1>
-
-<!-- rooms that are checked out but not cleaned yet -->
-<p>Heisann vaskepersonell!</p>
-
-@code
+@if (cleaningTasks == null || cleaningTasks.Count == 0)
 {
-    
+    <p>
+        <em>No cleaning tasks found.</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Room ID</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var task in cleaningTasks)
+        {
+            <tr>
+                <td>@task.Id</td>
+                <td>@task.Room_id</td>
+                <td>@task.Status</td>
+                <td>@task.Notes</td>
+                <td>
+                    @if (isEditing && editingTask == task)
+                    {
+                        <button @onclick="SaveEdit">Save</button>
+                        <button @onclick="CancelEdit">Cancel</button>
+                    }
+                    else
+                    {
+                        <button @onclick="() => StartEdit(task)">Edit</button>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Cleaning> cleaningTasks = [];
+    private bool isEditing;
+    private Cleaning editingTask;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cleaningTasks = await DbContext.Cleaning.ToListAsync();
+    }
+
+    void StartEdit(Cleaning task)
+    {
+        editingTask = task;
+        isEditing = true;
+    }
+
+    async Task SaveEdit()
+    {
+        DbContext.Cleaning.Update(editingTask);
+        await DbContext.SaveChangesAsync();
+
+        cleaningTasks = await DbContext.Cleaning.ToListAsync();
+        isEditing = false;
+    }
+
+    void CancelEdit()
+    {
+        DbContext.Entry(editingTask).State = EntityState.Unchanged;
+        isEditing = false;
+    }
 }

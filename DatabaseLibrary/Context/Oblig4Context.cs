@@ -31,15 +31,7 @@ public partial class Oblig4Context : DbContext
     
     public virtual DbSet<Maintenance_requests> Maintenance_requests { get; set; }
     
-    public DbSet<Cleaning> Cleaning { get; set; }
-    
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer("Server=tcp:dat154-2024-gruppe13.database.windows.net,1433;Initial Catalog=oblig4;Persist Security Info=False;User ID=bigggusdikkus;Password=Belletiss2024!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-        }
-    }
+    public virtual DbSet<Cleaning> Cleaning { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

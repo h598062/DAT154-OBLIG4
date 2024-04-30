@@ -1,11 +1,14 @@
 ﻿@page "/roomservice-requests"
+@using DatabaseLibrary.Context
+@using DatabaseLibrary.Models
+@using Microsoft.EntityFrameworkCore
+@inject Oblig4Context DbContext
 
 <h1>Room Service Requests</h1>
-
-@if (roomServiceRequests == null)
+@if (roomServiceRequests == null || roomServiceRequests.Count == 0)
 {
     <p>
-        <em>Loading...</em>
+        <em>No room service requests found.</em>
     </p>
 }
 else
@@ -26,72 +29,80 @@ else
         {
             <tr>
                 <td>@request.Id</td>
-                <td>@request.RoomId</td>
-                <td>@request.UserId</td>
+                <td>@request.Room_id</td>
+                <td>@request.Bruker_id</td>
                 <td>@request.Status</td>
                 <td>@request.Notes</td>
                 <td>
-                    <button @onclick="() => StartEdit(request)">Edit</button>
+                    @if (isEditing && editingRequest == request)
+                    {
+                        <button @onclick="SaveEdit">Save</button>
+                        <button @onclick="CancelEdit">Cancel</button>
+                    }
+                    else
+                    {
+                        <button @onclick="() => StartEdit(request)">Edit</button>
+                    }
                 </td>
             </tr>
+            @if (isEditing && editingRequest == request)
+            {
+                <tr>
+                    <td>
+                        <input @bind="editingRequest.Id"/>
+                    </td>
+                    <td>
+                        <input @bind="editingRequest.Room_id"/>
+                    </td>
+                    <td>
+                        <input @bind="editingRequest.Bruker_id"/>
+                    </td>
+                    <td>
+                        <input @bind="editingRequest.Status"/>
+                    </td>
+                    <td>
+                        <input @bind="editingRequest.Notes"/>
+                    </td>
+                    <td></td>
+                </tr>
+            }
         }
         </tbody>
     </table>
-
-    @if (isEditing)
-    {
-        <div>
-            <h2>Edit Request</h2>
-            <label>Status: <input @bind="editingRequest.Status"/></label>
-            <label>Notes: <textarea @bind="editingRequest.Notes"></textarea></label>
-            <button @onclick="SaveEdit">Save</button>
-            <button @onclick="CancelEdit">Cancel</button>
-        </div>
-    }
 }
 
 @code {
-    private List<RoomServiceRequest>? roomServiceRequests;
+    private List<Roomservice_requests> roomServiceRequests = [];
     private bool isEditing;
-    private RoomServiceRequest editingRequest;
+    private Roomservice_requests editingRequest;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // This is where you would normally load data from the database.
-        // For now, we'll just use some dummy data.
-        roomServiceRequests = new List<RoomServiceRequest>
-        {
-            new RoomServiceRequest { Id = 1, RoomId = 101, UserId = 1, Status = "Pending", Notes = "Need more towels" },
-            new RoomServiceRequest { Id = 2, RoomId = 102, UserId = 2, Status = "In Progress", Notes = "Room cleaning" },
-            // Add more requests as needed...
-        };
+        roomServiceRequests = await DbContext.Roomservice_requests.ToListAsync();
     }
 
-    void StartEdit(RoomServiceRequest request)
+    void StartEdit(Roomservice_requests request)
     {
         editingRequest = request;
         isEditing = true;
+        StateHasChanged();
     }
 
-    void SaveEdit()
+    async Task SaveEdit()
     {
-        // Here you would normally save the changes to the database.
-        // For now, we'll just update the list in memory.
+        DbContext.Roomservice_requests.Update(editingRequest);
+        await DbContext.SaveChangesAsync();
+
+        roomServiceRequests = await DbContext.Roomservice_requests.ToListAsync();
         isEditing = false;
+        StateHasChanged();
     }
 
     void CancelEdit()
     {
+        DbContext.Entry(editingRequest).State = EntityState.Unchanged;
         isEditing = false;
-    }
-
-    class RoomServiceRequest
-    {
-        public int Id { get; set; }
-        public int RoomId { get; set; }
-        public int UserId { get; set; }
-        public string Status { get; set; }
-        public string Notes { get; set; }
+        StateHasChanged();
     }
 
 }

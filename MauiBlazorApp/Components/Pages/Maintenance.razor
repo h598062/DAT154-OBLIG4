@@ -5,82 +5,93 @@
 @inject Oblig4Context DbContext
 
 <h1>Maintenance tasks</h1>
-@if (maintenanceRequests == null || maintenanceRequests.Count == 0)
+@if (maintenanceTasks == null || maintenanceTasks.Count == 0)
 {
     <p>
-        <em>No maintenance requests found.</em>
+        <em>No maintenance tasks found.</em>
     </p>
 }
 else
 {
-    {
-        <table class="table">
-            <thead>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Room ID</th>
+            <th>User ID</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var task in maintenanceTasks)
+        {
             <tr>
-                <th>ID</th>
-                <th>Room ID</th>
-                <th>User ID</th>
-                <th>Status</th>
-                <th>Notes</th>
-                <th>Actions</th>
+                <td>@task.Id</td>
+                <td>@task.Room_id</td>
+                <td>@task.User_id</td>
+                <td>@task.Status</td>
+                <td>@task.Notes</td>
+                <td>
+                    @if (isEditing && editingTask == task)
+                    {
+                        <button @onclick="SaveEdit">Save</button>
+                        <button @onclick="CancelEdit">Cancel</button>
+                    }
+                    else
+                    {
+                        <button @onclick="() => StartEdit(task)">Edit</button>
+                    }
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            @foreach (var request in maintenanceRequests)
+            @if (isEditing && editingTask == task)
             {
                 <tr>
-                    <td>@request.Id</td>
-                    <td>@request.Room_id</td>
-                    <td>@request.User_id</td>
-                    <td>@request.Status</td>
-                    <td>@request.Notes</td>
-                    <td>
-                        @if (isEditing && editingRequest == request)
-                        {
-                            <button @onclick="SaveEdit">Save</button>
-                            <button @onclick="CancelEdit">Cancel</button>
-                        }
-                        else
-                        {
-                            <button @onclick="() => StartEdit(request)">Edit</button>
-                        }
-                    </td>
+                    <td><input @bind="editingTask.Id" /></td>
+                    <td><input @bind="editingTask.Room_id" /></td>
+                    <td><input @bind="editingTask.User_id" /></td>
+                    <td><input @bind="editingTask.Status" /></td>
+                    <td><input @bind="editingTask.Notes" /></td>
+                    <td></td>
                 </tr>
             }
-            </tbody>
-        </table>
-    }
+        }
+        </tbody>
+    </table>
 }
 
 @code {
-    private List<Maintenance_requests> maintenanceRequests = [];
+    private List<Maintenance_requests> maintenanceTasks = [];
     private bool isEditing;
-    private Maintenance_requests editingRequest;
+    private Maintenance_requests editingTask;
 
     protected override async Task OnInitializedAsync()
     {
-        maintenanceRequests = await DbContext.Maintenance_requests.ToListAsync();
+        maintenanceTasks = await DbContext.Maintenance_requests.ToListAsync();
     }
 
-    void StartEdit(Maintenance_requests request)
+    void StartEdit(Maintenance_requests task)
     {
-        editingRequest = request;
+        editingTask = task;
         isEditing = true;
+        StateHasChanged();
     }
 
     async Task SaveEdit()
     {
-        DbContext.Maintenance_requests.Update(editingRequest);
+        DbContext.Maintenance_requests.Update(editingTask);
         await DbContext.SaveChangesAsync();
 
-        maintenanceRequests = await DbContext.Maintenance_requests.ToListAsync();
+        maintenanceTasks = await DbContext.Maintenance_requests.ToListAsync();
         isEditing = false;
+        StateHasChanged();
     }
 
     void CancelEdit()
     {
-        DbContext.Entry(editingRequest).State = EntityState.Unchanged;
+        DbContext.Entry(editingTask).State = EntityState.Unchanged;
         isEditing = false;
+        StateHasChanged();
     }
-
 }

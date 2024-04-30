@@ -1,6 +1,8 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Windows;
+using DatabaseLibrary.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace DesktopApp;
 
@@ -9,8 +11,13 @@ namespace DesktopApp;
 /// </summary>
 public partial class App : Application
 {
+    
+    public static Oblig4Context DbContext { get; private set; }
     public App()
     {
+        var optionsBuilder = new DbContextOptionsBuilder<Oblig4Context>();
+        optionsBuilder.UseSqlServer("Server=tcp:dat154-2024-gruppe13.database.windows.net,1433;Initial Catalog=oblig4;Persist Security Info=False;User ID=bigggusdikkus;Password=Belletiss2024!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+        DbContext = new Oblig4Context(optionsBuilder.Options);
         this.DispatcherUnhandledException += OnDispatcherUnhandledException;
     }
 

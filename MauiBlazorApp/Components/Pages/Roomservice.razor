@@ -30,7 +30,6 @@ else
             <tr>
                 <td>@request.Id</td>
                 <td>@request.Room_id</td>
-                <td>@request.Bruker_id</td>
                 <td>@request.Status</td>
                 <td>@request.Notes</td>
                 <td>
@@ -53,9 +52,6 @@ else
                     </td>
                     <td>
                         <input @bind="editingRequest.Room_id"/>
-                    </td>
-                    <td>
-                        <input @bind="editingRequest.Bruker_id"/>
                     </td>
                     <td>
                         <input @bind="editingRequest.Status"/>

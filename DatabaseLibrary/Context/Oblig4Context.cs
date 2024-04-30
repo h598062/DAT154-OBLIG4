@@ -129,7 +129,6 @@ public partial class Oblig4Context : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Room_id).HasColumnName("room_id");
-            entity.Property(e => e.Bruker_id).HasColumnName("bruker_id");
             entity.Property(e => e.Status)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -142,11 +141,6 @@ public partial class Oblig4Context : DbContext
                 .HasForeignKey(d => d.Room_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__roomservice_requests__room_id__02084FDA");
-
-            entity.HasOne(d => d.Bruker).WithMany()
-                .HasForeignKey(d => d.Bruker_id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__roomservice_requests__bruker_id__03006BFF");
         });
         
         modelBuilder.Entity<Maintenance_requests>(entity =>

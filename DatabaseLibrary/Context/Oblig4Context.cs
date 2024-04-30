@@ -62,12 +62,6 @@ public partial class Oblig4Context : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__bookingda__rom_i__06CD04F7");
             
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.User)
-                .WithMany()
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__bookingda__user_id__AspNetUsers");
         });
         
         
@@ -123,7 +117,7 @@ public partial class Oblig4Context : DbContext
 
             entity.HasOne(d => d.KvalitetNavigation).WithMany(p => p.Romdata)
                 .HasForeignKey(d => d.Kvalitet)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("FK__romdata__antall___02084FDA");
         });
 

@@ -24,7 +24,7 @@ public partial class Oblig4Context : DbContext
 
     public virtual DbSet<Romdata> Romdata { get; set; }
     
-    public virtual DbSet<Room> Rooms { get; set; }
+    // public virtual DbSet<Room> Rooms { get; set; }
 
     
     public virtual DbSet<Roomservice_requests> Roomservice_requests { get; set; }
@@ -88,6 +88,11 @@ public partial class Oblig4Context : DbContext
             entity.Property(e => e.Tlf)
                 .HasColumnType("text")
                 .HasColumnName("tlf");
+            entity.Property(e => e.AspNetUser_Id)
+                .HasColumnType("nvarchar")
+                .HasMaxLength(450)
+                .HasDefaultValue(null)
+                .HasColumnName("AspNetUser_Id");
         });
 
         modelBuilder.Entity<Prisdata>(entity =>
@@ -178,7 +183,7 @@ public partial class Oblig4Context : DbContext
                 .HasConstraintName("FK__maintenance_requests__user_id__03006BFF");
         });
         
-        modelBuilder.Entity<Room>(entity =>
+        /*modelBuilder.Entity<Room>(entity =>
         {
             entity.HasKey(e => e.Id);
 
@@ -191,7 +196,7 @@ public partial class Oblig4Context : DbContext
             entity.Property(e => e.Quality)
                 .IsRequired()
                 .HasMaxLength(50);
-        });
+        });*/
         
         modelBuilder.Entity<Cleaning>(entity =>
         {

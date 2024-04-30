@@ -27,6 +27,8 @@ CREATE TABLE brukere
     epost TEXT               NOT NULL,
     name  TEXT               NOT NULL,
     tlf   TEXT,
+    AspNetUser_Id nvarchar(450) NULL DEFAULT NULL,
+    FOREIGN KEY (AspNetUser_Id) REFERENCES AspNetUsers (Id) ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
 -- Tabell for å lagre bookingdata

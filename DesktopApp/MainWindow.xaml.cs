@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using DatabaseLibrary.Context;
 using DatabaseLibrary.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DesktopApp;
 
@@ -36,12 +37,45 @@ public partial class MainWindow : Window
 
     private void EditReservation_Click(object sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        var selectedReservation = (Bookingdata)ReservationsDataGrid.SelectedItem;
+
+        if (selectedReservation != null)
+        {
+            var editReservationWindow = new EditReservationWindow(selectedReservation);
+            if (editReservationWindow.ShowDialog() == true)
+            {
+                App.DbContext.Entry(selectedReservation).State = EntityState.Modified;
+                App.DbContext.SaveChanges();
+
+                BookingList = App.DbContext.Bookingdata.ToList();
+                ReservationsDataGrid.ItemsSource = BookingList;
+                ReservationsDataGrid.Items.Refresh();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Please select a reservation to edit.");
+        }
     }
 
     private void DeleteReservation_Click(object sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        var selectedReservation = (Bookingdata)ReservationsDataGrid.SelectedItem;
+
+        if (selectedReservation != null)
+        {
+            BookingList.Remove(selectedReservation);
+            App.DbContext.Bookingdata.Remove(selectedReservation);
+            App.DbContext.SaveChanges();
+
+            BookingList = App.DbContext.Bookingdata.ToList();
+            ReservationsDataGrid.ItemsSource = BookingList;
+            ReservationsDataGrid.Items.Refresh();
+        }
+        else
+        {
+            MessageBox.Show("Velj ei reservasjon å slette.");
+        }
     }
 
     private void AddRequest_Click(object sender, RoutedEventArgs e)

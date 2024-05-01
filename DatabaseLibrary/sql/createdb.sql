@@ -1,4 +1,7 @@
-﻿DROP TABLE IF EXISTS bookingdata;
+﻿DROP TABLE IF EXISTS roomservice_requests;
+DROP TABLE IF EXISTS maintenance_requests;
+DROP TABLE IF EXISTS Cleaning;
+DROP TABLE IF EXISTS bookingdata;
 DROP TABLE IF EXISTS romdata;
 DROP TABLE IF EXISTS prisdata;
 DROP TABLE IF EXISTS brukere;
@@ -16,17 +19,19 @@ CREATE TABLE romdata
     id            int IDENTITY (1,1) NOT NULL PRIMARY KEY,
     kvalitet      VARCHAR(255)       NOT NULL,
     antall_senger INT                NOT NULL
-    FOREIGN KEY (kvalitet) REFERENCES prisdata (kvalitet) ON DELETE NO ACTION ON UPDATE CASCADE
+        FOREIGN KEY (kvalitet) REFERENCES prisdata (kvalitet) ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
 -- Bruker tabell
 -- Denne skal linkes mot en User fra ASPNET Identity, bruk migrations for å legge til den funksjonalitet
 CREATE TABLE brukere
 (
-    id    int IDENTITY (1,1) NOT NULL PRIMARY KEY,
-    epost TEXT               NOT NULL,
-    name  TEXT               NOT NULL,
-    tlf   TEXT,
+    id            int IDENTITY (1,1) NOT NULL PRIMARY KEY,
+    epost         TEXT               NOT NULL,
+    name          TEXT               NOT NULL,
+    tlf           TEXT,
+    AspNetUser_Id nvarchar(450)      NULL DEFAULT NULL,
+    FOREIGN KEY (AspNetUser_Id) REFERENCES AspNetUsers (Id) ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
 -- Tabell for å lagre bookingdata
@@ -42,3 +47,29 @@ CREATE TABLE bookingdata
     FOREIGN KEY (bruker) REFERENCES brukere (id) ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
+CREATE TABLE roomservice_requests
+(
+    id      INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+    room_id INT                NOT NULL,
+    status  VARCHAR(255)       NOT NULL,
+    notes   TEXT               NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES romdata (id) ON DELETE NO ACTION ON UPDATE CASCADE
+);
+
+CREATE TABLE maintenance_requests
+(
+    id      INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+    room_id INT                NOT NULL,
+    status  VARCHAR(255)       NOT NULL,
+    notes   TEXT               NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES romdata (id) ON DELETE NO ACTION ON UPDATE CASCADE
+);
+
+CREATE TABLE Cleaning
+(
+    Id      INT IDENTITY (1,1) NOT NULL PRIMARY KEY,
+    Room_id INT                NOT NULL,
+    Status  VARCHAR(255)       NOT NULL,
+    Notes   TEXT               NOT NULL,
+    FOREIGN KEY (Room_id) REFERENCES romdata (id) ON DELETE NO ACTION ON UPDATE CASCADE
+)

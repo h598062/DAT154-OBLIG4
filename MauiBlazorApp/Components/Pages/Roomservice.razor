@@ -1,0 +1,104 @@
+﻿@page "/roomservice-requests"
+@using DatabaseLibrary.Context
+@using DatabaseLibrary.Models
+@using Microsoft.EntityFrameworkCore
+@inject Oblig4Context DbContext
+
+<h1>Room Service Requests</h1>
+@if (roomServiceRequests == null || roomServiceRequests.Count == 0)
+{
+    <p>
+        <em>No room service requests found.</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Room ID</th>
+            <th>User ID</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var request in roomServiceRequests)
+        {
+            <tr>
+                <td>@request.Id</td>
+                <td>@request.Room_id</td>
+                <td>@request.Status</td>
+                <td>@request.Notes</td>
+                <td>
+                    @if (isEditing && editingRequest == request)
+                    {
+                        <button @onclick="SaveEdit">Save</button>
+                        <button @onclick="CancelEdit">Cancel</button>
+                    }
+                    else
+                    {
+                        <button @onclick="() => StartEdit(request)">Edit</button>
+                    }
+                </td>
+            </tr>
+            @if (isEditing && editingRequest == request)
+            {
+                <tr>
+                    <td>
+                        <input @bind="editingRequest.Id"/>
+                    </td>
+                    <td>
+                        <input @bind="editingRequest.Room_id"/>
+                    </td>
+                    <td>
+                        <input @bind="editingRequest.Status"/>
+                    </td>
+                    <td>
+                        <input @bind="editingRequest.Notes"/>
+                    </td>
+                    <td></td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Roomservice_requests> roomServiceRequests = [];
+    private bool isEditing;
+    private Roomservice_requests editingRequest;
+
+    protected override async Task OnInitializedAsync()
+    {
+        roomServiceRequests = await DbContext.Roomservice_requests.ToListAsync();
+    }
+
+    void StartEdit(Roomservice_requests request)
+    {
+        editingRequest = request;
+        isEditing = true;
+        StateHasChanged();
+    }
+
+    async Task SaveEdit()
+    {
+        DbContext.Roomservice_requests.Update(editingRequest);
+        await DbContext.SaveChangesAsync();
+
+        roomServiceRequests = await DbContext.Roomservice_requests.ToListAsync();
+        isEditing = false;
+        StateHasChanged();
+    }
+
+    void CancelEdit()
+    {
+        DbContext.Entry(editingRequest).State = EntityState.Unchanged;
+        isEditing = false;
+        StateHasChanged();
+    }
+
+}

@@ -1,10 +1,11 @@
 ﻿@page "/booking"
-@using Microsoft.AspNetCore.Authorization
-@using DatabaseLibrary
+@using System.Security.Claims
 @using DatabaseLibrary.Context
+@using Microsoft.AspNetCore.Authorization
 @using DatabaseLibrary.Models
 @using Microsoft.EntityFrameworkCore
-@inject IDbContextFactory<Oblig4Context> DbContext
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Oblig4Context DbContext
 @rendermode InteractiveServer
 
 @attribute [Authorize]
@@ -12,47 +13,194 @@
 <PageTitle>Book rom</PageTitle>
 
 <h1>Booking av rom</h1>
+<label>
+    Velg rom kvalitet:
+    <select @bind="valgtRomKvalitet">
+        @foreach (var rq in roomQuality)
+        {
+            <option value="@rq.Kvalitet">@rq.Kvalitet</option>
+        }
+    </select>
+</label><br/>
+<label>Start dato: <input type="date" @bind="startdato"/></label><br/>
+<label>Slutt dato: <input type="date" @bind="sluttdato"/></label><br/>
+<label>Antall Personer: <input type="number" @bind="antallPersoner" min="1"/></label><br/>
 
-<select @bind="valgtRomId">
-    @foreach (var rom in rooms)
-    {
-        <option value="@rom.Id">@rom.Kvalitet</option>
-    }
-</select>
+@if (bruker == null)
+{
+    <h2>Legg inn bruker info</h2>
+    <label>Navn: <input type="text" @bind="_bruker_navn"/></label>
+    <br/>
+    <label>Epost: <input type="email" @bind="_bruker_epost"/></label>
+    <br/>
+    <label>Telefonnummer: <input type="tel" @bind="_bruker_tlf"/></label>
+}
 
-<input type="date" @bind="startdato" />
-<input type="date" @bind="sluttdato" />
-<input type="number" @bind="antallPersoner" min="1" />
-<input type="text" @bind="bruker" />
 
-<button @onclick="BookRom"> Book rom</button>
+<button @onclick="BookRom">Book rom</button>
+
+@if (soekt)
+{
+    <p>Rommet er booket</p>
+}
 
 @code {
-    private int valgtRomId;
-    private List<Romdata> rooms;
+    private string valgtRomKvalitet;
+
+    private List<Prisdata> roomQuality = [];
+
+    // private List<Room> rooms;
     private DateTime startdato = DateTime.Now;
     private DateTime sluttdato = DateTime.Now.AddDays(1);
     private int antallPersoner = 1;
-    private string bruker = string.Empty;
+    private Brukere? bruker;
+    bool soekt;
 
-    private async Task OnInitializedAsync()
-    { 
-        var context = DbContext.CreateDbContext();
-        rooms = await context.Romdata.ToListAsync();
+    private string _bruker_navn;
+    private string _bruker_epost;
+    private string _bruker_tlf;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        bruker = await finnBruker();
+        // rooms = new List<Room>();
+        roomQuality = await DbContext.Prisdata.ToListAsync();
     }
-    
+
+    private async Task<string> GetCurrentUser()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            return user.Identity.Name;
+        }
+
+        return null;
+    }
+
+    private async Task<string> GetCurrentUserId()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            return user.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        return null;
+    }
+
+    private async Task<Brukere?> finnBruker()
+    {
+        Brukere local_user = null;
+        try
+        {
+            var userId = await GetCurrentUserId();
+            local_user = await DbContext.Brukeres.FirstOrDefaultAsync(b => b.AspNetUser_Id == userId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error: " + e.Message);
+            if (e.InnerException != null)
+            {
+                Console.WriteLine("Inner Exception: " + e.InnerException.Message);
+            }
+        }
+
+        return local_user;
+    }
+
+    private async Task<Brukere> OpprettBruker()
+    {
+        try
+        {
+            var userId = await GetCurrentUserId();
+            bruker = new Brukere
+            {
+                Name = _bruker_navn,
+                Epost = _bruker_epost,
+                Tlf = _bruker_tlf,
+                AspNetUser_Id = userId
+            };
+            DbContext.Brukeres.Add(bruker);
+            await DbContext.SaveChangesAsync();
+            return bruker;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error: " + e.Message);
+            if (e.InnerException != null)
+            {
+                Console.WriteLine("Inner Exception: " + e.InnerException.Message);
+            }
+        }
+
+        return null;
+    }
+
+    private async Task<Romdata> GetRom()
+    {
+        // TODO: Endre til å hente rom fra en liste med rom som er ledig i valgt periode
+        try
+        {
+            var rom = new Romdata
+            {
+                Kvalitet = valgtRomKvalitet,
+                AntallSenger = antallPersoner
+            };
+            Console.WriteLine("Rom: " + rom.Kvalitet + " " + rom.AntallSenger);
+            DbContext.Romdata.Add(rom);
+            await DbContext.SaveChangesAsync();
+            return rom;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error: " + e.Message);
+            if (e.InnerException != null)
+            {
+                Console.WriteLine("Inner Exception: " + e.InnerException.Message);
+            }
+        }
+
+        return null;
+    }
+
     private async Task BookRom()
     {
-        var context = DbContext.CreateDbContext();
-        var booking = new Bookingdata
+        try
         {
-            RomId = valgtRomId,
-            Startdato = startdato,
-            Sluttdato = sluttdato,
-            AntallPersoner = antallPersoner,
-            Bruker = bruker
-        };
-        context.Bookingdata.Add(booking);
-        await context.SaveChangesAsync();
+            if (bruker == null)
+            {
+                bruker = await OpprettBruker();
+            }
+
+            var rom = await GetRom();
+            
+            var booking = new Bookingdata
+            {
+                Startdato = startdato,
+                Sluttdato = sluttdato,
+                AntallPersoner = antallPersoner,
+                Bruker = bruker.Id,
+                RomId = rom.Id,
+            };
+            DbContext.Bookingdata.Add(booking);
+            await DbContext.SaveChangesAsync();
+            soekt = true;
+        }
+        catch (Exception ex)
+        {
+            // Log the error and the inner exception message
+            Console.WriteLine("Error: " + ex.Message);
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
+            }
+        }
     }
+
 }
